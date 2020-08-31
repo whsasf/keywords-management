@@ -6,7 +6,7 @@
       <br>
       x
      <i-divider type="vertical" orientation="center"/>
-     <span @click="switch2(myselect.value)">{{ myselect.label }}</span>
+     <span @click="switch2(myselect)">{{ myselect.label }}</span>
   </div>
 </template>
 
@@ -51,9 +51,10 @@ export default {
     this.myselect = {'value': this.projectLists[0].value, 'label': this.projectLists[0].label}
   }, 
   methods: {
-    ...mapMutations(['changeCurrentComponent']),
+    ...mapMutations(['changeCurrentComponent','changeCurrentUpshow']),
     switch2: function (new2){
-      this.changeCurrentComponent(new2)
+      this.changeCurrentComponent(new2.value)
+      this.changeCurrentUpshow(new2.label)
     },
     perChange: function (e){
       console.log(this.selcted)
