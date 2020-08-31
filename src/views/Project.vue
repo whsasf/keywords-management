@@ -26,6 +26,9 @@ export default {
   created () {
 
   },
+  beforeDestroy (){
+    this.changeCurrentComponent ('projectScope')
+  },
   methods: {
     ...mapMutations(['changeCurrentUpshow','changecurrentUserName','changeCurrentUserDepartment','changeCurrentComponent'])
   }
