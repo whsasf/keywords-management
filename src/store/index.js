@@ -6,13 +6,27 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     departments: [
-      '增长二部',
-      '增长一部'
+      '技术部',
+      '产品部',
+      '淘宝运营部',
+      '货源部',
+      '流量中心-推广一部',
+      '流量中心-推广二部',
+      '流量中心-增长一部',
+      '流量中心-增长二部',
+      '销售部',
+      '客服部',
+      '品牌部',
+      'APP运营部',
+      '内容规划',
+      '核算',
+      '人事行政部',
+      '优翔广告部'
     ],
-    currentUpshow: '项目预览',
+    currentUpshow: '项目管理',
     currentUserName: '',
-    currentUserDepartment: '',
-    currentComponent: 'projectScope'
+    currentUserDepartment: '流量中心-增长二部',
+    currentComponent: '项目管理'
   },
   mutations: {
     changeCurrentUpshow (state,newvalue) {

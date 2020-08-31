@@ -32,9 +32,23 @@ const routes = [
   {
     path: '/Project',
     name: 'Project',
+    redirect: '/Project/Management',
     component: function () {
       return import('../views/Project.vue')
-    }
+    },
+    children: [
+      {
+        path: 'Management',
+        name: 'Management',
+        component: function () {
+          return import('../components/Management.vue')
+        },
+      },
+      {
+        path: '*',
+        redirect: 'Management'
+      }
+    ]
   },
   {
     path: '*',

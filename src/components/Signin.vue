@@ -55,7 +55,6 @@ export default {
               if (valid) {
                   self.$Message.success('登录成功!');
                   self.changecurrentUserName(self.formInline.user)
-                  self.changeCurrentUserDepartment('增长二部')
                   setTimeout(() => {self.$router.push('/Project')}, 2)
               } else {
                   self.$Message.error('登录失败!');
