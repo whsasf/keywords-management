@@ -23,24 +23,25 @@ export default new Vuex.Store({
       '人事行政部',
       '优翔广告部'
     ],
-    currentUpshow: '项目管理',
+    currentUpshow: '',
     currentUserName: '',
     currentUserDepartment: '流量中心-增长二部',
-    currentComponent: '项目管理'
+    // currentComponent: '项目管理',
+    baseurl: 'http://127.0.0.1:3000/'
   },
   mutations: {
     changeCurrentUpshow (state,newvalue) {
-      state.currentUpshow = newvalue
-    },
+       state.currentUpshow = newvalue
+     },
     changecurrentUserName (state,newvalue) {
       state.currentUserName = newvalue
     },
     changeCurrentUserDepartment (state,newvalue) {
       state.currentUserDepartment = newvalue
     },
-    changeCurrentComponent (state,newvalue) {
-      state.currentComponent = newvalue
-    },
+    // changeCurrentComponent (state,newvalue) {
+    //   state.currentComponent = newvalue
+    // }
   },
   actions: {
   },

@@ -30,11 +30,11 @@ const routes = [
     ]
   },
   {
-    path: '/Project',
-    name: 'Project',
-    redirect: '/Project/Management',
+    path: '/Main',
+    name: 'Main',
+    redirect: '/Main/Management',
     component: function () {
-      return import('../views/Project.vue')
+      return import('../views/Main.vue')
     },
     children: [
       {
@@ -52,7 +52,7 @@ const routes = [
   },
   {
     path: '*',
-    redirect: '/Project'
+    redirect: '/Main'
   }
 ]
 

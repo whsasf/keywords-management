@@ -24,5 +24,9 @@
 
 #nav a.router-link-exact-active {
   color: #42b983;
+
+}
+.ivu-card-body{
+  padding: 16px 0px !important
 }
 </style>

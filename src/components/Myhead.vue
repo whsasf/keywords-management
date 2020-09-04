@@ -86,6 +86,7 @@ export default {
 .Mymenu-user{
   flex: 4;
 }
+
 .Mymenu-user-sub{
   text-align: left
 }

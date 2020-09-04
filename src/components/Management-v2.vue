@@ -7,11 +7,7 @@
       <div class="Management-card-in">
       <div class="Management-input-project-name">
       <div>
-        <i-form ref="normalFormProject" :model="normalFormProject" :rules="normalRules"  v-if="editIndexProject === index">
-          <i-formItem  prop="editProject">
-            <i-input type="text" v-model="normalFormProject.editProject"  />
-          </i-formItem>
-        </i-form>
+         <i-input type="text" v-model="editProject" v-if="editIndexProject === index" />
          <div class="Management-input-project-title" v-else>
            <i-icon type="ios-film"></i-icon>
            <a  class="Management-input-project-title-main" href="https://www.stockhey.com" target="_blank">{{ rowData.projectName }}</a>
@@ -20,9 +16,9 @@
 
       <div>
         <div v-if="editIndexProject === index">
-            <i-button class="Management-input-project-normal" @click="handleSave(rowData,'project',index,normalFormProject.editProject)" size="small" type="success">保存</i-button>
+            <i-button class="Management-input-project-normal" @click="handleSave(rowData,'project',index,editProject)" size="small" type="success">保存</i-button>
             <i-button class="Management-input-project-normal" @click="handleCancle()" size="small">取消</i-button>
-            <i-button class="Management-input-project-normal Management-input-project-delete" @click="handleDelete(rowData,'project',index,normalFormProject.editProject)" size="small" type="error">删除</i-button>
+            <i-button class="Management-input-project-normal Management-input-project-delete" @click="handleDelete(rowData,'project',index,editProject)" size="small" type="error">删除</i-button>
           </div>
           <div v-else>
             <i-button class="Management-input-project-name-midify" @click="handleEditProject(rowData, index)" size="small">修改项目</i-button>
@@ -32,14 +28,9 @@
       
       <div class="Management-input-project-categories">
         <div class="Management-input-category-item" v-for="(category, innerIndex) in rowData.categories" :key="innerIndex">
-
-          <i-form ref="normalFormCategory" :model="normalFormCategory" :rules="normalRules"  v-if="EditIndexcategory === index + '-' + innerIndex">
-             <i-formItem  prop="editCategory">
-              <i-input type="text" v-model="normalFormCategory.editCategory"/>
-            </i-formItem>
-          </i-form>
+              <i-input type="text" v-model="editCategory" v-if="EditIndexcategory === index + '-' + innerIndex" />
               <span v-else @dblclick="handleEditCategory(rowData,index,innerIndex)">{{ category.categoryName}}</span>
-              <i-button v-if="EditIndexcategory === index + '-' + innerIndex" class="Management-input-project-normal" @click="handleSave(rowData,'categories',innerIndex,normalFormCategory.editCategory)" size="small" type="success">保存</i-button>
+              <i-button v-if="EditIndexcategory === index + '-' + innerIndex" class="Management-input-project-normal" @click="handleSave(rowData,'categories',innerIndex,editCategory)" size="small" type="success">保存</i-button>
               <i-button v-if="EditIndexcategory === index + '-' + innerIndex" class="Management-input-project-normal" @click="handleCancle()" size="small">取消</i-button>
               <i-button v-if="EditIndexcategory === index + '-' + innerIndex" class="Management-input-project-normal Management-input-project-delete" @click="handleDelete(rowData,'categories',innerIndex)" size="small" type="error">删除</i-button>
         </div>
@@ -67,27 +58,8 @@ import createNewproject from '@/components/createNewproject.vue'
 export default {
   name: 'projectScope',
   data () {
-    const validateProject = (rule, value, callback) => {
-                if (value === '') {
-                    callback(new Error('该项不能为空'));
-                } else {
-                    
-                    callback();
-                }
-      };
     return {
       createCategoryBottonStatus: false,
-      normalFormProject: {
-        editProject: '',  // 第一列输入框，当然聚焦的输入框的输入内容，与 data 分离避免重构的闪烁
-      },
-      normalFormCategory: {
-        editCategory: ''
-      },
-      normalRules: {
-        editProject: [
-          { validator: validateProject, trigger: 'blur' }
-          ]
-        },
       columns: [
           {
             title: '项目名称',
@@ -108,8 +80,8 @@ export default {
         ],
         editIndexProject: -1,  // 当前聚焦的输入框的行数
         EditIndexcategory: -1,
-        //editProject: '',  // 第一列输入框，当然聚焦的输入框的输入内容，与 data 分离避免重构的闪烁
-        //editCategory: '',
+        editProject: '',  // 第一列输入框，当然聚焦的输入框的输入内容，与 data 分离避免重构的闪烁
+        editCategory: '',
         projectLists: ''
     }
   },
@@ -127,18 +99,19 @@ export default {
   methods: {
       ...mapMutations(['changeCurrentUpshow']),
       handleEditProject: function (row, index) {
-        this.normalFormProject.editProject = row.projectName;
+        this.editProject = row.projectName;
         this.editIndexProject = index;
       },
       handleEditCategory: function (row, index,InnerIndex) {
-        this.normalFormCategory.editCategory = row.categories[InnerIndex].categoryName;
+        this.editCategory = row.categories[InnerIndex].categoryName;
         this.EditIndexcategory = index + '-' + InnerIndex;
-        // console.log(this.EditIndexcategory,this.normalFormCategory.editCategory)
+        // console.log(this.EditIndexcategory,this.editCategory)
       },
       handleCancle: function (){
         this.editIndexProject = -1
         this.EditIndexcategory = -1
-        this.$refs['normalFormProject'][0].resetFields()
+        this.editCategory = ''
+        this.editProject = ''
         this.createCategoryBottonStatus = false
       },
       handleDelete: function (xrow,xtype,xindex){
@@ -154,67 +127,25 @@ export default {
         this.EditIndexcategory = -1
         this.createCategoryBottonStatus = false
       },
-      ifChanged: function (before,after){
-        // 本函数用来检查 字段是否被更改，只有被更改过的字段才会发起后台同步请求
-          if (before === after){
-            return false
-          }else {
-            return true
-          }
-      },
       handleSave: function(xrow,xtype,xindex,xvalue){
-        //console.log (xrow,xtype,xindex,xvalue)
-        let self = this
-         if(xtype === 'project'){
-        self.$refs['normalFormProject'][0].validate((valid) => { // 此处要加[0]，这是一个bug
-          if (valid) {
-              console.log('验证成功')
-              
-              //保存项目
-              // 如果字段确实被改了，才同步，否则， 相当于点击了取消
-              if ( self.ifChanged(xrow.projectName,self.normalFormProject.editProject)){
-                xrow.projectName = xvalue
-                console.log('出现改变，进行同步更新')
-                let projectId = xrow['_id']['$oid']
-                let payLoad = {'before': xrow.projectName,'after':self.normalFormProject.editProject }
-                // 进行同步
-                self.axios({
-                    method: 'patch',
-                    url: self.baseurl + 'Projects/' + projectId,
-                    withCredentials: 'true',
-                    data: payLoad
-                  })
-                  .then( res => {
-                    // console.log(res)
-                    // 成功后会自动拉去所有最新数据，重新渲染页面
-                    self.projectLists = res.data
-                  })
-                  .catch(err => {
-                    console.log(err)
-                  })
-              } else {
-                console.log('没有被修改，什么也不做')
-                self.$refs['normalFormProject'][0].resetFields()
-              }  
-               self.EditIndexcategory = -1
-              self.editIndexProject = -1
-              self.createCategoryBottonStatus = false 
-          } else {
-              console.log('验证失败')
-          }
-          })
-          } else if (xtype === 'categories'){
-                //保存目录
-                xrow.categories.xindex.push({'categoryName':xvalue})
-              }
-        
+        // console.log (xrow,xtype,xindex,xvalue)
+        if(xtype === 'project'){
+          //保存项目
+          xrow.projectName = xvalue
+        }else if (xtype === 'categories'){
+          //保存目录
+          xrow.categories.xindex.push({'categoryName':xvalue})
+        }
+        this.EditIndexcategory = -1
+        this.editIndexProject = -1
+        this.createCategoryBottonStatus = false
       },
       addCategory: function (xrow,xindex){
         console.log(xrow.categories)
         // xrow.categories.push({'categoryName':'默认值'})
         let currentIndex = xrow.categories.length - 1
         this.createCategoryBottonStatus = true
-        this.normalFormCategory.editCategory = '默认值'
+        this.editCategory = '默认值'
         this.EditIndexcategory = xindex + '-' + currentIndex
       },
       handleNewProject: function (projectData){

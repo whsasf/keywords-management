@@ -10,7 +10,7 @@
 import {mapState, mapMutations} from 'vuex'
 import Myhead from '@/components/Myhead.vue'
 export default {
-  name: 'Project',
+  name: 'Main',
   components: {
     'myhead': Myhead,
   },
@@ -21,8 +21,6 @@ export default {
 
   },
   beforeDestroy (){
-    this.changeCurrentComponent ('项目管理')
-    this.changeCurrentUpshow ('项目管理')
   },
   methods: {
     ...mapMutations(['changeCurrentUpshow','changecurrentUserName','changeCurrentUserDepartment','changeCurrentComponent'])
@@ -31,7 +29,7 @@ export default {
 </script>
 <style >
 .Project-main {
-  margin: 50px;
+  margin: 20px 50px;
 }
 
 .projectScope .ivu-tabs-nav-scroll {
