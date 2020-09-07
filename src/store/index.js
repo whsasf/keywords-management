@@ -24,24 +24,33 @@ export default new Vuex.Store({
       '优翔广告部'
     ],
     currentUpshow: '',
+    collpsed: true,
     currentUserName: '',
-    currentUserDepartment: '流量中心-增长二部',
-    // currentComponent: '项目管理',
+    urlItemWindowShow: false,
+    refreshRouteKey: 0,
+    //currentUserDepartment: '',
+    currentComponent: '',
     baseurl: 'http://127.0.0.1:3000/'
   },
   mutations: {
-    changeCurrentUpshow (state,newvalue) {
-       state.currentUpshow = newvalue
-     },
+    changeCollpsed(state,newvalue){
+      state.collpsed = newvalue
+    },
+    changeUrlItemWindowShow(state,newvalue){
+      state.urlItemWindowShow = newvalue
+    },
+    changeRefreshRouteKey(state,newvalue){
+      state.refreshRouteKey = newvalue
+    },
     changecurrentUserName (state,newvalue) {
       state.currentUserName = newvalue
     },
     changeCurrentUserDepartment (state,newvalue) {
       state.currentUserDepartment = newvalue
     },
-    // changeCurrentComponent (state,newvalue) {
-    //   state.currentComponent = newvalue
-    // }
+    changeCurrentComponent (state,newvalue) {
+      state.currentComponent = newvalue
+    }
   },
   actions: {
   },

@@ -1,14 +1,15 @@
 <template>
-  <div class="keywords-managment">
-    项目1
+  <div>
+    usageTag
   </div>
 </template>
 
 <script>
 export default {
-  name: 'project1',
+  name: 'usageTag',
 }
 </script>
 
 <style scoped>
+
 </style>

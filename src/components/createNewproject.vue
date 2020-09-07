@@ -1,6 +1,6 @@
 <template>
     <div class="management-newProject">
-      <i-button class="management-newProject-button" type="dashed" long icon="md-add" @click="addProject()" :disabled="createProjectBottonStatus">新建项目</i-button>
+      <i-button class="management-newProject-button" type="success"  icon="md-add" @click="addProject()" :disabled="createProjectBottonStatus">新建项目</i-button>
       <i-modal
         v-model="modal1"
         title="创建新项目"
@@ -48,13 +48,16 @@
     </div>
 </template>
 <script>
+import {mapState} from 'vuex'
     export default {
         name: 'createNewproject',
         data () {
             const validateProject = (rule, value, callback) => {
                 if (value === '') {
                     callback(new Error('请填写项目名称'));
-                } else {
+                } else if(value.indexOf(" ") != -1 || value.indexOf("'") != -1 || value.indexOf('"') != -1){
+                    callback(new Error("项目名称不能包含空格,\",'"));
+                }else {
                     callback();
                 }
             };
@@ -80,6 +83,7 @@
             }
         },
         computed: {
+            ...mapState(['currentUserName']),
             shownformCustomItems: function (){
                 let shownformCustomItemsData = []
                 for (let element in this.formCustom.items) {
@@ -122,7 +126,7 @@
                                 categories.push({'categoryName': self.shownformCustomItems[myindex].value})
                             }
                         }
-                        let projectInfo = {'projectName': newProjectName, 'creater': '','categories': categories}
+                        let projectInfo = {'projectName': newProjectName, 'creater': self.currentUserName,'categories': categories}
                         // console.log(projectInfo)
                         this.$emit('createNeWProject',projectInfo)
                         self.$Message.success('提交成功!');

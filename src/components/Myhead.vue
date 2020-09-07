@@ -2,6 +2,13 @@
   <div class="Myhead">
     <i-menu class="Mymenu" mode="horizontal" :theme="theme1" active-name="" @on-select="signout">
       <i-menuItem class="Mymenu-title" name="title" >{{ myTitle }}</i-menuItem>
+      <i-menuItem class="Mymenu-collpse" name="collpse" v-show="showTogether">
+         <span title="隐藏侧边栏" v-if="collpsed"  @click="changeCollpsed(false)"><el-icon class="el-icon-s-fold" ></el-icon></span>
+         <span title="隐藏侧边栏" v-else @click="changeCollpsed(true)"><el-icon class="el-icon-s-unfold" ></el-icon></span>
+       </i-menuItem>
+       <i-menuItem @click="refresh" class="Mymenu-refresh" name="refresh">
+        <i-icon @click="refresh" size="25" type="md-refresh" title="刷新列表" ></i-icon>
+       </i-menuItem>
       <i-menuItem class="Mymenu-project" name="projecctName"> {{ myProject}}</i-menuItem>
       <i-submenu name="user" class="Mymenu-user" >
           <template slot="title">
@@ -26,6 +33,8 @@
 </template>
 
 <script>
+import { Icon } from 'element-ui';
+import {mapState,mapMutations} from 'vuex'
 export default {
   name: 'Myhead',
   data () {
@@ -39,6 +48,19 @@ export default {
     myName: String,
     myDepartment: String
   },
+  computed: {
+    ...mapState(['currentComponent','collpsed','refreshRouteKey']),
+    showTogether: function (){
+      if (this.currentComponent === '项目管理'){
+      return false
+      }else {
+        return true
+      }
+    }
+  },
+  components: {
+    'el-icon':Icon
+  },
   filters: {
     getName: function (value) {
       if (!value) return ''
@@ -47,11 +69,19 @@ export default {
       }
   },
   methods: {
+    ...mapMutations(['changeCollpsed','changeRefreshRouteKey']),
+    refresh: function (){
+      this.changeRefreshRouteKey(this.refreshRouteKey + 1)
+      this.changeCollpsed(true)
+    },
     signout: function (name){
       if (name === 'user-signout'){
         this.$Message.success('登出...');
         this.$router.push('/Account/Signin')
       }
+    },
+    sayhello: function(){
+      console.log('hello')
     }
   }
 }
@@ -61,7 +91,7 @@ export default {
 
 .Myhead {
   display: sticky;
-  margin: 5px 1%;
+  margin: 0;
   top: 0px
 }
 .Mymenu {
@@ -77,6 +107,19 @@ export default {
   text-align: left;
   pointer-events: none;
 }
+.Mymenu-collpse{
+  flex: 1;
+  font-size: 1.5rem;
+  color: #212891 !important;
+  text-align: left;
+}
+.Mymenu-refresh{
+  flex: 1;
+  font-size: 1.5rem;
+  color: #212891 !important;
+  text-align: left;
+}
+
 .Mymenu-project{
   flex: 6;
   font-size: 1.5rem;
@@ -84,7 +127,7 @@ export default {
   pointer-events: none;
 }
 .Mymenu-user{
-  flex: 4;
+  flex: 6;
 }
 
 .Mymenu-user-sub{
@@ -93,5 +136,9 @@ export default {
 
 .Mymenu-user-disable{
   pointer-events: none;
+}
+
+.Mymenu-collpse{
+  font-size: 1.3rem
 }
 </style>

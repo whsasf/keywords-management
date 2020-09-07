@@ -1,13 +1,13 @@
 <template>
   <div class="singnin">
     <i-form ref="formInline" :model="formInline" :rules="ruleInline">
-        <i-formItem prop="user">
-            <i-input type="text" v-model="formInline.user" placeholder="用户名为公司邮箱" :clearable=true>
+        <i-formItem prop="account">
+            <i-input type="text" v-model="formInline.account" placeholder="用户名为公司邮箱" :clearable=true>
                 <i-icon type="ios-mail-outline" slot="prepend"></i-icon>
             </i-input>
         </i-formItem>
-        <i-formItem prop="password">
-            <i-input type="password" v-model="formInline.password" placeholder="密码" :clearable=true>
+        <i-formItem prop="shadow">
+            <i-input type="password" v-model="formInline.shadow" placeholder="密码" :clearable=true>
                 <i-icon type="ios-lock-outline" slot="prepend"></i-icon>
             </i-input>
         </i-formItem>
@@ -24,13 +24,14 @@
 
 <script>
 import {mapState, mapMutations} from 'vuex'
+import sha1 from 'sha1'
 export default {
   name: 'Signin',
   data () {
       return {
           formInline: {
-              user: 'test@dianbaobao.com',
-              password: '123456'
+              account: '',
+              shadow: ''
           },
           ruleInline: {
               user: [
@@ -45,7 +46,7 @@ export default {
       }
   },
     computed: {
-    ...mapState(['currentUserName','currentUserDepartment'])
+    ...mapState(['baseurl','currentUserName','currentUserDepartment'])
   },
   methods: {
       ...mapMutations(['changecurrentUserName','changeCurrentUserDepartment']),
@@ -53,9 +54,25 @@ export default {
         let self = this
           self.$refs[name].validate((valid) => {
               if (valid) {
-                  self.$Message.success('登录成功!');
-                  self.changecurrentUserName(self.formInline.user)
-                  setTimeout(() => {self.$router.push('/Project')}, 2)
+                // 发送
+                let payLoad = {'account':self.formInline.account,'shadow':sha1(self.formInline.shadow)}
+                  self.axios({
+                    method: 'post',
+                    url: self.baseurl + 'Account/Signin',
+                    withCredentials: 'true',
+                    data: payLoad
+                  })
+                  .then( res => {
+                    console.log(res)
+                    self.$Message.success('登录成功!');
+                    self.changecurrentUserName(self.formInline.account)
+                    self.changeCurrentUserDepartment(res.data.department)
+                    setTimeout(() => {self.$router.push('/Main')}, 2)
+                  })
+                  .catch(err => {
+                    self.$Message.error(err);
+                    // console.log(err)
+                  }) 
               } else {
                   self.$Message.error('登录失败!');
               }

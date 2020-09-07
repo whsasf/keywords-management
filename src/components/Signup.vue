@@ -1,8 +1,8 @@
 <template>
   <div class="singnup">
     <i-form  ref="formInline" :model="formInline" :rules="ruleInline">
-        <i-formItem prop="user">
-            <i-input type="email" v-model="formInline.user" placeholder="用户名须为公司邮箱" :clearable=true>
+        <i-formItem prop="account">
+            <i-input type="email" v-model="formInline.account" placeholder="用户名须为公司邮箱" :clearable=true>
                 <i-icon type="ios-mail-outline" slot="prepend"></i-icon>
             </i-input>
         </i-formItem>
@@ -35,6 +35,7 @@
 
 <script>
 import {mapState} from 'vuex'
+import sha1 from 'sha1'
 export default {
   name: 'Signup',
   data () {
@@ -64,13 +65,13 @@ export default {
         };
       return {
           formInline: {
-              user: '',
+              account: '',
               password1: '',
               password2: '',
               department: ''
           },
           ruleInline: {
-              user: [
+              account: [
                   { required: true, message: '用户名不能为空', trigger: 'blur' },
                   { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
               ],
@@ -87,15 +88,31 @@ export default {
       }
   },
   computed: {
-          ...mapState(['departments'])
+          ...mapState(['departments','baseurl'])
         },
   methods: {
       handleSubmit(name) {
           let self = this
           self.$refs[name].validate((valid) => {
               if (valid) {
-                  self.$Message.success('注册成功!');
-                  setTimeout(() => {self.$router.push('/Account/Signin')}, 2)     
+                  console.log('验证成功')
+                  //注册
+                  let payLoad = {'account':self.formInline.account,'shadow':sha1(self.formInline.password1),'department':self.formInline.department}
+                  self.axios({
+                    method: 'post',
+                    url: self.baseurl + 'Account/Signup',
+                    withCredentials: 'true',
+                    data: payLoad
+                  })
+                  .then( res => {
+                    console.log(res)
+                    self.$Message.success('注册成功!');
+                    setTimeout(() => {self.$router.push('/Account/Signin')}, 2)  
+                  })
+                  .catch(err => {
+                    self.$Message.error(err);
+                    // console.log(err)
+                  }) 
               } else {
                   self.$Message.error('注册失败!');
               }
