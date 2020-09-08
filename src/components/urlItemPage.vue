@@ -81,18 +81,6 @@
                 </div>
 
 
-                 <div class="Url-itemPage-form-status">
-                <i-formItem  prop="statusEdit">
-                   <div class="Url-itemPage-form-status-inside">
-                <label class="Url-itemPage-form-status-label">状态 </label>
-                <i-select class="Url-itemPage-form-status-input" v-model="formCustom.statusEdit">
-                    <i-option v-for="item in statusSet" :value="item" :key="item">{{ item }}</i-option>
-                </i-select>
-                    </div>
-                 </i-formItem>
-                 </div>
-
-
             </i-form>
         
         </div>
@@ -111,19 +99,14 @@ import {mapState, mapMutations} from 'vuex'
             const validateUrl = (rule, value, callback) => {
                 if (value === '') {
                     callback(new Error('url不能为空'));
-                } else if (!value.toLowerCase().startsWith("http://") || !value.toLowerCase().startsWith("https://") ) {
+                   
+                } else if ( !value.toLowerCase().startsWith('https://') && !value.toLowerCase().startsWith('http://') ) {
                     callback(new Error('url应以http://或https://开头'));
                 }else {
                     callback();
                 }
             };
             return {
-                statusSet:[
-                    '未开始',
-                    '运行中',
-                    '成功',
-                    '失败'
-                ],
                 categories: [
                    '分类1',
                    '分类2',
@@ -218,40 +201,77 @@ import {mapState, mapMutations} from 'vuex'
             },
             modalOk (name) {
                 let self = this
-                self.index = 1
                 // check 项目 是否为空
                 self.$refs[name].validate((valid) => {
                     if (valid) {
-                        // console.log('验证成功')
-                        self.modal1 = false
-                        self.createProjectBottonStatus = false
-                        // 得到 项目添加的有效数据，并返回到父组件
-                        let itemName = self.formCustom.itemName
-                        let categories = []
-                        for (let myindex in self.shownformCustomItems){
-                            if (self.shownformCustomItems[myindex].value ){
-                                categories.push({'categoryName': self.shownformCustomItems[myindex].value})
-                            }
+                        console.log('验证成功')
+
+                        // console.log(self.formCustom.itemName)
+                        // console.log(self.shownformCustomUrlIncludeItems)
+                        // console.log(self.shownformCustomUrlExcludeItems)
+                        // console.log(self.formCustom.categoriesEdit)
+                        // console.log(self.formCustom.statusEdit)
+                        // 构造最终结果集
+                        let itemInfo = {}
+                        itemInfo['rootUrl'] = self.formCustom.itemName
+                        itemInfo['category'] =  self.formCustom.categoriesEdit
+                        itemInfo['status'] = '未开始'
+                        let tempUrlIncludeItems = []
+                        let tempUrlExcludeItems = []
+                        for (let indexy in self.shownformCustomUrlIncludeItems){
+                            tempUrlIncludeItems.push(self.shownformCustomUrlIncludeItems[indexy]['value'])
                         }
-                        let projectInfo = {'projectName': itemName, 'creater': self.currentUserName,'categories': categories}
-                        // console.log(projectInfo)
-                        this.$emit('createNeWProject',projectInfo)
-                        self.$Message.success('提交成功!');
-                        self.formCustom.items = [
+                        for (let indexy in self.shownformCustomUrlExcludeItems){
+                            tempUrlExcludeItems.push(self.shownformCustomUrlExcludeItems[indexy]['value'])
+                        }
+                        itemInfo['urlIncludePath'] =  tempUrlIncludeItems
+                        itemInfo['urlExcludePath'] =  tempUrlExcludeItems
+                        //console.log(itemInfo)
+
+                        // 得到 项目添加的有效数据，并返回到父组件
+                         self.$emit('createUrlNewItem',[itemInfo])
+                         self.$refs[name].resetFields()
+                         self.changeUrlItemWindowShow(false)
+                         self.formCustom.urlIncludeItems =[
+                                {
+                                    value: {'path':'','type':'regex'},
+                                    index: 1,
+                                    status: 1
+                                }
+                        ],
+                         self.formCustom.urlExcludeItems = [
                             {
-                                value: '',
+                                value: {'path':'','type':'regex'},
                                 index: 1,
                                 status: 1
                             }
-                        ],
-
-                        self.formCustom.itemName = ''
-                        self.$refs[name].resetFields()
+                        ]
+                        // let itemName = self.formCustom.itemName
+                        // let categories = []
+                        // for (let myindex in self.shownformCustomItems){
+                        //     if (self.shownformCustomItems[myindex].value ){
+                        //         categories.push({'categoryName': self.shownformCustomItems[myindex].value})
+                        //     }
+                        // }
+                        // let projectInfo = {'projectName': itemName, 'creater': self.currentUserName,'categories': categories}
+                        // // console.log(projectInfo)
+                        // // this.$emit('createNeWProject',projectInfo)
+                        // self.$Message.success('提交成功!');
+                        // self.formCustom.items = [
+                        //     {
+                        //         value: '',
+                        //         index: 1,
+                        //         status: 1
+                        //     }
+                        // ],
+ 
+                        // self.formCustom.itemName = ''
+                        // self.$refs[name].resetFields()
                         
                     } else {
                         // console.log('验证失败')
                         self.$Message.error('提交失败');
-                        self.modal1 = true
+                        // self.modal1 = true
                     }
                 })
             },

@@ -30,6 +30,7 @@ export default new Vuex.Store({
     refreshRouteKey: 0,
     //currentUserDepartment: '',
     currentComponent: '',
+    currentComponentProjectId: '',
     baseurl: 'http://127.0.0.1:3000/'
   },
   mutations: {
@@ -38,6 +39,9 @@ export default new Vuex.Store({
     },
     changeUrlItemWindowShow(state,newvalue){
       state.urlItemWindowShow = newvalue
+    },
+    changeCurrentComponentProjectId(state,newvalue){
+      state.currentComponentProjectId = newvalue
     },
     changeRefreshRouteKey(state,newvalue){
       state.refreshRouteKey = newvalue

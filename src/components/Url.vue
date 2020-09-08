@@ -1,10 +1,10 @@
 <template>
   <div class="Url">
 
-     <i-page :total="projectCount" :current="currentPage" :page-size="pageSize" :page-size-opts=[10,20,30,40,50,100] size="small" show-elevator show-total show-sizer @on-change="pageChange" @on-page-size-change="pageSizeChange"/>
+     <i-page :total="itemCount" :current="currentPage" :page-size="pageSize" :page-size-opts=[10,20,30,40,50,100] size="small" show-elevator show-total show-sizer @on-change="pageChange" @on-page-size-change="pageSizeChange"/>
      <br>
      <i-button class="Url-newItem-button" type="primary"  @click="addItem" >单条添加</i-button>
-     <i-itemPage :urlItemWindowShow= "urlItemWindowShow" :urlItemPageTitle="urlItemPageTitle"></i-itemPage>
+     <i-itemPage :urlItemWindowShow= "urlItemWindowShow" :urlItemPageTitle="urlItemPageTitle" @createUrlNewItem="handleUrlNewItem" ></i-itemPage>
      <i-button class="Url-newItems-button" type="primary"  @click="addItems" >批量添加</i-button>
      <i-button class="Url-newItems-button" type="error"  @click="deleteItem" >删除</i-button>
      <i-button class="Url-newItems-button" type="success"  @click="runcrawler">开始爬取</i-button>
@@ -18,7 +18,7 @@
         <i-button slot="append" icon="ios-search"></i-button>
     </i-input>
     <br>
-   <i-table :columns="columns1" :data="data1" :loading="loading" stripe border>
+   <i-table :columns="columns1" :data="UrlItemData" :loading="loading" stripe border>
       <template slot-scope="{ row, index }" slot="action">
         <div class="Url-actions">
             <i-button type="primary" size="small" style="margin-right: 5px" @click="show(index)">编辑</i-button>
@@ -28,7 +28,7 @@
       </template>
       
    </i-table>
-   
+   <i-page :total="itemCount" :current="currentPage" :page-size="pageSize" :page-size-opts=[10,20,30,40,50,100] size="small" show-elevator show-total show-sizer @on-change="pageChange" @on-page-size-change="pageSizeChange"/>
   </div>
 </template>
 
@@ -40,9 +40,9 @@ export default {
   data (){
     return {
       loading: false,
-      projectCount: 0,
+      itemCount: 0,
       currentPage: 1,
-      pageSize: 20,
+      pageSize: 10,
       value13: '',
       select3: 'day',
       urlItemPageShow: false,
@@ -50,16 +50,15 @@ export default {
       columns1: [
           {
               type: 'selection',
-              width: 40,
+              width: 30,
               align: 'center',
               resizable: true,
               fixed: 'left'
           },
           {   
-              type: 'index',
-              title: 'Id',
+              title: '#id',
               key: 'id',
-              width: 80,
+              width: 70,
               align: 'center',
               sortable: true,
               resizable: true,
@@ -70,6 +69,10 @@ export default {
               align: 'center',
               width: 200,
               resizable: true,
+              render: (h, params) => {
+                // console.log(params)
+                    return h('a',params.row.rootUrl)
+                }
               
           },
           {
@@ -78,6 +81,14 @@ export default {
               align: 'center',
               width: 200,
               resizable: true,
+              render: (h, params) => {
+                    let urlIncludePathList = []
+                    let temp= params.row.urlIncludePath
+                    for (let ele in temp){
+                      urlIncludePathList.push(temp[ele]['path']+'['+ temp[ele]['type'] +']')
+                    }
+                    return h('p',urlIncludePathList.join(';'))
+                }
           },
           {
               title: '排除路径',
@@ -85,6 +96,14 @@ export default {
               align: 'center',
               width: 200,
               resizable: true,
+              render: (h, params) => {
+                    let urlExcludePathList = []
+                    let temp= params.row.urlExcludePath
+                    for (let ele in temp){
+                      urlExcludePathList.push(temp[ele]['path']+'['+ temp[ele]['type'] +']')
+                    }
+                    return h('p',urlExcludePathList.join(';'))
+                }
           },
           {
               title: '分类',
@@ -93,12 +112,16 @@ export default {
               width: 200,
               filters: [],
               resizable: true,
+              render: (h, params) => {
+                console.log(params.row)
+                    return (h('p',params.row.category.join(';')))
+                }
           },
           {
               title: '状态',
               key: 'status',
               align: 'center',
-              width: 100,
+              width: 80,
               filters: [],
               resizable: true,
           },
@@ -117,51 +140,75 @@ export default {
               align: 'center',
               width: 200,
               resizable: true,
-              fixed: 'right'
           }
       ],
-      data1: [
-          {
-              name: 'John Brown',
-              age: 18,
-              address: 'New York No. 1 Lake Park',
-              date: '2016-10-03'
-          },
-          {
-              name: 'Jim Green',
-              age: 24,
-              address: 'London No. 1 Lake Park',
-              date: '2016-10-01'
-          },
-          {
-              name: 'Joe Black',
-              age: 30,
-              address: 'Sydney No. 1 Lake Park',
-              date: '2016-10-02'
-          },
-          {
-              name: 'Jon Snow',
-              age: 26,
-              address: 'Ottawa No. 2 Lake Park',
-              date: '2016-10-04'
-          }
-      ]
+      UrlItemData: []
     }
   },
   computed: {
-    ...mapState(['urlItemWindowShow']),
+    ...mapState(['baseurl','urlItemWindowShow','currentComponent']),
+  },
+  created(){
+    this.fetchAllItems() // 获取当前
   },
   components: {
     'i-itemPage':itemPage,
   } ,
   methods: {
     ...mapMutations(['changeUrlItemWindowShow']),
-    pageChange: function (){
-      console.log('1')
+    fetchAllItems: function (){
+        let self = this
+        let pageParams = {'currentPage':self.currentPage,'pageSize':self.pageSize}
+        console.log(pageParams)
+        self.axios({
+          method: 'get',
+          url: self.baseurl + 'Urls/' + self.currentComponent,
+          withCredentials: 'true',
+          params: pageParams
+        })
+        .then( res => {
+          //console.log(res)
+          if (res.data.count !== ''){
+            self.itemCount = res.data.count
+          }
+          self.UrlItemData = res.data.content
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      },
+    handleUrlNewItem: function (itemInfo){
+      let self = this
+      console.log(itemInfo)
+      // 发送到 后端
+      self.axios({
+        method: 'post',
+        url: self.baseurl + 'Urls/' + self.currentComponent,
+        withCredentials: 'true',
+        data: itemInfo
+      })
+      .then( res => {
+        // console.log(res)
+        if (res.data.count !== ''){
+          self.itemCount = res.data.count
+        }
+        self.UrlItemData = res.data.content
+      })
+      .catch(err => {
+        console.log(err)
+      })
     },
-    pageSizeChange: function(){
-      console.log('2')
-    },
+    pageChange: function (pageIndex){
+        // console.log(pageIndex)
+        this.currentPage = pageIndex
+        this.fetchAllItems()
+      },
+      pageSizeChange: function (pageSize){
+        this.pageSize = pageSize
+        this.currentPage = 1
+        // console.log(pageSize)
+        this.fetchAllItems()
+      },
     addItem: function (){
       console.log('3')
       this.urlItemPageTitle ='单条添加'
@@ -199,5 +246,7 @@ export default {
 .Url-actions {
   display: flex
 }
-
+.Url >>> .ivu-table-cell{
+  padding: 0 5px !important
+}
 </style>

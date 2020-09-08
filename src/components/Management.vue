@@ -16,7 +16,7 @@
         </i-form>
          <div class="Management-input-project-title" v-else>
            <i-icon type="ios-film"></i-icon>
-           <router-link class="Management-input-project-title-main" :to="'/Main/Project/'+(rowData.projectName)" >{{ rowData.projectName }}</router-link>
+          <router-link class="Management-input-project-title-main" :to="'/Main/Project/'+(rowData.projectName)" >{{ rowData.projectName }}</router-link>
          </div>
       </div>
 
@@ -142,7 +142,7 @@ export default {
     
   }, 
   methods: {
-      ...mapMutations(['changeCurrentComponent']),
+      ...mapMutations(['changeCurrentComponent','changeCurrentComponentProjectId']),
       handleEditProject: function (row, index) {
         this.normalFormProject.editProject = row.projectName;
         this.editIndexProject = index;
@@ -390,7 +390,7 @@ export default {
           params: pageParams
         })
         .then( res => {
-          //console.log(res)
+          // console.log(res)
           if (res.data.count !== ''){
             self.projectCount = res.data.count
           }
