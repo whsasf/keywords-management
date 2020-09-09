@@ -85,7 +85,7 @@
         
         </div>
         <div slot="footer">
-            <i-button type="text" size="large" @click="modalCancel('formCustom')">取消</i-button>
+            <i-button type="text" size="large" @click="modalCancel()">取消</i-button>
             <i-button type="primary" size="large" @click="modalOk('formCustom')">提交</i-button>
         </div>
       </i-modal>
@@ -121,25 +121,25 @@ import {mapState, mapMutations} from 'vuex'
                 urlIncludeIndex: 1,
                 urlExcludeIndex: 1,
                 
-                formCustom: {
-                    itemName: '',
-                    categoriesEdit: [],
-                    statusEdit: '未开始',
-                    urlIncludeItems: [
-                        {
-                            value: {'path':'','type':'regex'},
-                            index: 1,
-                            status: 1
-                        }
-                    ],
-                    urlExcludeItems: [
-                        {
-                            value: {'path':'','type':'regex'},
-                            index: 1,
-                            status: 1
-                        }
-                    ]
-                },
+                //formCustom: {
+                //    itemName: '',
+                //    categoriesEdit: [],
+                //    statusEdit: '未开始',
+                //    urlIncludeItems: [
+                //        {
+                //            value: {'path':'','type':'regex'},
+                //            index: 1,
+                //            status: 1
+                //        }
+                //    ],
+                //    urlExcludeItems: [
+                //        {
+                //            value: {'path':'','type':'regex'},
+                //            index: 1,
+                //            status: 1
+                //        }
+                //    ]
+                //},
                 ruleCustom: {
                     itemName: [
                         { validator: validateUrl, trigger: 'blur' }
@@ -147,7 +147,7 @@ import {mapState, mapMutations} from 'vuex'
                 },
             }
         },
-        props: ['urlItemPageTitle','urlItemWindowShow'],
+        props: ['urlItemPageTitle','urlItemWindowShow','formCustom'],
         computed: {
             ...mapState(['currentUserName']),
             shownformCustomUrlIncludeItems: function (){
@@ -170,6 +170,14 @@ import {mapState, mapMutations} from 'vuex'
             }
         },
         beforeDestroy (){
+        },
+        mounted(){
+            console.log('mounted')
+            // console.log(this.formCustom)
+            // 计算 urlIncludeIndex 的值 
+            // console.log(this.formCustom)
+            // this.urlIncludeIndex = this.formCustom.urlIncludeItems.length
+            // this.urlExcludeIndex = this.formCustom.urlExcludeItems.length
         },
         methods: {
             ...mapMutations(['changeUrlItemWindowShow']),
@@ -229,44 +237,32 @@ import {mapState, mapMutations} from 'vuex'
                         //console.log(itemInfo)
 
                         // 得到 项目添加的有效数据，并返回到父组件
-                         self.$emit('createUrlNewItem',[itemInfo])
+                        // 判断是新建还是  编辑， formCustom 中包含 uid的是编辑
+                        if ( !self.formCustom.uid) {
+                            //新建
+                            self.$emit('createUrlNewItem',[itemInfo])
+                        }else{
+                            // 编辑模式，此时需要将uid传递回去
+                            self.$emit('createUrlNewItem',{'uid':self.formCustom.uid,'data':itemInfo})
+                        }
                          self.$refs[name].resetFields()
+                         self.urlIncludeIndex = 1
+                         self.urlExcludeIndex = 1
                          self.changeUrlItemWindowShow(false)
-                         self.formCustom.urlIncludeItems =[
-                                {
-                                    value: {'path':'','type':'regex'},
-                                    index: 1,
-                                    status: 1
-                                }
-                        ],
-                         self.formCustom.urlExcludeItems = [
-                            {
-                                value: {'path':'','type':'regex'},
-                                index: 1,
-                                status: 1
-                            }
-                        ]
-                        // let itemName = self.formCustom.itemName
-                        // let categories = []
-                        // for (let myindex in self.shownformCustomItems){
-                        //     if (self.shownformCustomItems[myindex].value ){
-                        //         categories.push({'categoryName': self.shownformCustomItems[myindex].value})
-                        //     }
-                        // }
-                        // let projectInfo = {'projectName': itemName, 'creater': self.currentUserName,'categories': categories}
-                        // // console.log(projectInfo)
-                        // // this.$emit('createNeWProject',projectInfo)
-                        // self.$Message.success('提交成功!');
-                        // self.formCustom.items = [
+                        // self.formCustom.urlIncludeItems =[
+                        //        {
+                        //            value: {'path':'','type':'regex'},
+                        //            index: 1,
+                        //            status: 1
+                        //        }
+                        //],
+                        //  self.formCustom.urlExcludeItems = [
                         //     {
-                        //         value: '',
+                        //         value: {'path':'','type':'regex'},
                         //         index: 1,
                         //         status: 1
                         //     }
-                        // ],
- 
-                        // self.formCustom.itemName = ''
-                        // self.$refs[name].resetFields()
+                        // ]
                         
                     } else {
                         // console.log('验证失败')
@@ -275,33 +271,13 @@ import {mapState, mapMutations} from 'vuex'
                     }
                 })
             },
-            modalCancel (name) {
+            modalCancel () {
                 let self = this
-                self.formCustom.categoriesEdit = []
-                self.formCustom.statusEdit = '未开始'
-                self.$refs[name].resetFields()
                 self.urlIncludeIndex = 1
                 self.urlExcludeIndex = 1
-                self.formCustom.urlIncludeItems =[
-                    {
-                        value: {'path':'',type:'regex'},
-                        index: 1,
-                        status: 1
-                    }
-                ]
-                self.formCustom.urlExcludeItems = [
-                    {
-                        value: {'path':'',type:'regex'},
-                        index: 1,
-                        status: 1
-                    }
-                ]
                 self.changeUrlItemWindowShow(false) 
                 
-            },
-            addProject: function (){
-                this.modal1 = true
-            },
+            }
         }
     }
 </script>

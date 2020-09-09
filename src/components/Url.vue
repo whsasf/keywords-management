@@ -1,29 +1,34 @@
 <template>
   <div class="Url">
-
-     <i-page :total="itemCount" :current="currentPage" :page-size="pageSize" :page-size-opts=[10,20,30,40,50,100] size="small" show-elevator show-total show-sizer @on-change="pageChange" @on-page-size-change="pageSizeChange"/>
-     <br>
-     <i-button class="Url-newItem-button" type="primary"  @click="addItem" >单条添加</i-button>
-     <i-itemPage :urlItemWindowShow= "urlItemWindowShow" :urlItemPageTitle="urlItemPageTitle" @createUrlNewItem="handleUrlNewItem" ></i-itemPage>
-     <i-button class="Url-newItems-button" type="primary"  @click="addItems" >批量添加</i-button>
-     <i-button class="Url-newItems-button" type="error"  @click="deleteItem" >删除</i-button>
-     <i-button class="Url-newItems-button" type="success"  @click="runcrawler">开始爬取</i-button>
-     <i-button class="Url-newItems-button" type="primary"  @click="exportOut" >结果导出</i-button>
-      <br><br>
-      <i-input v-model="value13">
-        <i-select v-model="select3" slot="prepend" style="width: 80px">
-            <i-option value="day">Day</i-option>
-            <i-option value="month">Month</i-option>
-        </i-select>
-        <i-button slot="append" icon="ios-search"></i-button>
-    </i-input>
-    <br>
+      <div class="Url-part"> 
+        <div class="Url-part1">
+          <div class="Url-part11">
+        <i-button class="Url-part111 Url-newItems-button" type="error"  @click="deleteItem" >删除</i-button>
+        <i-button class="Url-part112 Url-newItems-button" type="primary"  @click="exportOut" >结果导出</i-button>
+        <i-button class="Url-part113 Url-newItem-button" type="primary"  @click="addItem" >单条添加</i-button>
+        <i-itemPage :formCustom="formCustom" :urlItemWindowShow= "urlItemWindowShow" :urlItemPageTitle="urlItemPageTitle" @createUrlNewItem="handleUrlNewItem" ></i-itemPage>
+        <i-button class="Url-part114 Url-newItems-button" type="primary"  @click="addItems" >批量添加</i-button>
+        </div>
+        <div class="Url-part12">
+        <i-input class="Url-part121"  v-model="value13" placeholder="请输入url进行模糊查询">
+           <i-select v-model="select3" slot="prepend" style="width: 60px" >
+               <i-option value="Url">Url</i-option>
+           </i-select>
+           <i-button slot="append" icon="ios-search"></i-button>
+        </i-input>
+         <i-page class="Url-part122" :total="itemCount" :current="currentPage" :page-size="pageSize" :page-size-opts=[10,20,30,40,50,100] size="small" show-elevator show-total show-sizer @on-change="pageChange" @on-page-size-change="pageSizeChange"/>
+         </div>
+      </div>
+      <div class="Url-part2">
+      <i-button  class=" Url-newItems-button" type="success"  @click="runcrawler">开始爬取</i-button>
+      </div>
+    </div>
    <i-table :columns="columns1" :data="UrlItemData" :loading="loading" stripe border>
-      <template slot-scope="{ row, index }" slot="action">
+      <template slot-scope="{ row }" slot="action">
         <div class="Url-actions">
-            <i-button type="primary" size="small" style="margin-right: 5px" @click="show(index)">编辑</i-button>
-            <i-button type="error" size="small" style="margin-right: 5px" @click="remove(index)">查看详情</i-button>
-            <i-button type="error" size="small" @click="remove(index)">动作</i-button>
+            <i-button type="primary" size="small" style="margin-right: 5px" @click="Urledit(row)">编辑</i-button>
+            <i-button type="error" size="small" style="margin-right: 5px" @click="UrlDetail(row)">查看详情</i-button>
+            <i-button type="error" size="small" @click="UrlAction(row)">动作</i-button>
             </div>
       </template>
       
@@ -44,7 +49,7 @@ export default {
       currentPage: 1,
       pageSize: 10,
       value13: '',
-      select3: 'day',
+      select3: 'Url',
       urlItemPageShow: false,
       urlItemPageTitle:'单条添加',
       columns1: [
@@ -66,7 +71,7 @@ export default {
           {
               title: 'Url',
               key: 'rootUrl',
-              align: 'center',
+              align: 'left',
               width: 200,
               resizable: true,
               render: (h, params) => {
@@ -78,7 +83,7 @@ export default {
           {
               title: '运行路径',
               key: 'urlIncludePath',
-              align: 'center',
+              align: 'left',
               width: 200,
               resizable: true,
               render: (h, params) => {
@@ -93,7 +98,7 @@ export default {
           {
               title: '排除路径',
               key: 'urlExcludePath',
-              align: 'center',
+              align: 'left',
               width: 200,
               resizable: true,
               render: (h, params) => {
@@ -108,12 +113,12 @@ export default {
           {
               title: '分类',
               key: 'category',
-              align: 'center',
+              align: 'left',
               width: 200,
               filters: [],
               resizable: true,
               render: (h, params) => {
-                console.log(params.row)
+                // console.log(params.row)
                     return (h('p',params.row.category.join(';')))
                 }
           },
@@ -142,11 +147,31 @@ export default {
               resizable: true,
           }
       ],
-      UrlItemData: []
+      UrlItemData: [],
+      formCustom: {},
+      formCustomOrigin: {
+          itemName: '',
+          categoriesEdit: [],
+          statusEdit: '未开始',
+          urlIncludeItems: [
+              {
+                  value: {'path':'','type':'regex'},
+                  index: 1,
+                  status: 1
+              }
+          ],
+          urlExcludeItems: [
+              {
+                  value: {'path':'','type':'regex'},
+                  index: 1,
+                  status: 1
+              }
+          ]
+      },
     }
   },
   computed: {
-    ...mapState(['baseurl','urlItemWindowShow','currentComponent']),
+    ...mapState(['baseurl','urlItemWindowShow','currentComponent'])
   },
   created(){
     this.fetchAllItems() // 获取当前
@@ -156,6 +181,31 @@ export default {
   } ,
   methods: {
     ...mapMutations(['changeUrlItemWindowShow']),
+    Urledit: function (xrow){
+      let self = this
+      // console.log(xrow)
+      self.formCustom = {}
+      self.formCustom.itemName = xrow.rootUrl
+      self.formCustom.categoriesEdit = xrow.category
+      self.formCustom.uid = xrow['_id']['$oid']
+      self.statusEdit = xrow.status
+      let urlIncludeTemp = []
+      // change urlIncludeItems and urlExcludeItems
+      for (let ele in xrow.urlIncludePath){
+        urlIncludeTemp.push({'value': xrow.urlIncludePath[ele], 'status': 1, 'index': parseInt(ele)+1})
+      }
+
+      let urlExcludeTemp = []
+      // change urlIncludeItems and urlExcludeItems
+      for (let ele in xrow.urlExcludePath){
+        urlExcludeTemp.push({'value': xrow.urlExcludePath[ele], 'status': 1, 'index': parseInt(ele)+1})
+      }
+      self.formCustom.urlIncludeItems = urlIncludeTemp
+      self.formCustom.urlExcludeItems = urlExcludeTemp
+      console.log(self.formCustom)
+      this.urlItemPageTitle ='单条编辑'
+      this.changeUrlItemWindowShow(true)
+    },
     fetchAllItems: function (){
         let self = this
         let pageParams = {'currentPage':self.currentPage,'pageSize':self.pageSize}
@@ -179,24 +229,49 @@ export default {
       },
     handleUrlNewItem: function (itemInfo){
       let self = this
-      console.log(itemInfo)
-      // 发送到 后端
-      self.axios({
-        method: 'post',
-        url: self.baseurl + 'Urls/' + self.currentComponent,
-        withCredentials: 'true',
-        data: itemInfo
-      })
-      .then( res => {
-        // console.log(res)
-        if (res.data.count !== ''){
-          self.itemCount = res.data.count
-        }
-        self.UrlItemData = res.data.content
-      })
-      .catch(err => {
-        console.log(err)
-      })
+      //区分 新建 还是 修改
+      if (!itemInfo['uid']){
+        // 新建
+          // 发送到 后端
+          self.axios({
+            method: 'post',
+            url: self.baseurl + 'Urls/' + self.currentComponent,
+            withCredentials: 'true',
+            data: itemInfo
+          })
+          .then( res => {
+            // console.log(res)
+            if (res.data.count !== ''){
+              self.itemCount = res.data.count
+            }
+            self.UrlItemData = res.data.content
+            self.formCustom = self.formCustomOrigin
+          })
+          .catch(err => {
+            console.log(err)
+            self.formCustom = self.formCustomOrigin
+          })
+      }else{
+        console.log(itemInfo)
+          // 修改
+          self.axios({
+            method: 'put',
+            url: self.baseurl + 'Urls/' + self.currentComponent + '/' + itemInfo.uid,
+            withCredentials: 'true',
+            data: itemInfo['data']
+          })
+          .then( res => {
+            // console.log(res)
+            if (res.data.count !== ''){
+              self.itemCount = res.data.count
+            }
+            self.UrlItemData = res.data.content
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      }
+      
     },
     pageChange: function (pageIndex){
         // console.log(pageIndex)
@@ -210,8 +285,29 @@ export default {
         this.fetchAllItems()
       },
     addItem: function (){
-      console.log('3')
       this.urlItemPageTitle ='单条添加'
+      // this.formCustom = this.formCustomOrigin
+      // console.log(this.formCustom)
+      // console.log(this.formCustomOrigin)
+      this.formCustom = {
+          itemName: '',
+          categoriesEdit: [],
+          statusEdit: '未开始',
+          urlIncludeItems: [
+              {
+                  value: {'path':'','type':'regex'},
+                  index: 1,
+                  status: 1
+              }
+          ],
+          urlExcludeItems: [
+              {
+                  value: {'path':'','type':'regex'},
+                  index: 1,
+                  status: 1
+              }
+          ]
+      },
       this.changeUrlItemWindowShow(true)
     },
     addItems: function (){
@@ -248,5 +344,41 @@ export default {
 }
 .Url >>> .ivu-table-cell{
   padding: 0 5px !important
+}
+
+
+.Url-part{
+  display: flex
+}
+
+.Url-part1{
+   flex: 4;
+}
+
+.Url-part2{
+   flex: 1;
+}
+
+.Url-part11{
+   display: flex;
+   margin:5px;
+   justify-content: space-around
+}
+
+.Url-part12{
+   display: flex;
+   margin: 5px
+}
+
+.Url-part121{
+  flex: 2
+}
+
+.Url-part122{
+  flex: 3
+}
+
+.Url  >>> .ivu-input-group .ivu-input{
+  
 }
 </style>
