@@ -18,20 +18,16 @@
         
         </div>
         <div class="Url-part12">
-        <div>
-        <i-input class="Url-part121"  v-model="searchItem"  @input="urlSearch" placeholder="请输入url进行模糊查询">
-           <i-select v-model="select3" slot="prepend" style="width: 60px" >
+         <i-select v-model="select3" slot="prepend" style="width: 60px" >
                <i-option value="Url">Url</i-option>
            </i-select>
-           <i-button slot="append" icon="ios-search"></i-button>
-        </i-input>
+        <i-select filterable  remote class="Url-part121"  v-model="searchItem"  :remote-method="urlSearch" placeholder="请输入url进行模糊查询">
+           <i-option v-for="(item,index) in searchResult" :value="item.rootUrl" :key="index">{{item.rootUrl}}</i-option>
+        </i-select>
+         <i-button slot="append" icon="ios-search"></i-button>
         
-        <i-dropdown placement="bottom-start" divided trigger="click"  :visible="searchReaultListvisible" @on-click="handleSelected" @on-clickoutside.prevent="handleClickOutside">
-            <i-dropdownMenu slot="list">
-            <i-dropdownItem v-for="(item,index) in searchResult" :name="item.rootUrl" :key="index">{{item.rootUrl}}</i-dropdownItem>
-            </i-dropdownMenu>
-        </i-dropdown>
-        </div>
+
+
          <i-page class="Url-part122" :total="itemCount" :current="currentPage" :page-size="pageSize" :page-size-opts=[10,20,30,40,50,100] size="small" show-elevator show-total show-sizer @on-change="pageChange" @on-page-size-change="pageSizeChange"/>
          </div>
       </div>
@@ -184,9 +180,10 @@ export default {
     handleClickOutside: function (){
       console.log('1')
     },
-    urlSearch: function (e){
+    urlSearch: function (query){
       let self = this
-      self.searchItem = e.toLowerCase()
+      // console.log(query)
+      self.searchItem = query.toLowerCase()
       //console.log(this.searchItem)
       //发往后端，进行查询
       let queryParams = {'keyword':self.searchItem}
@@ -203,13 +200,38 @@ export default {
         //   self.projectCount = res.data.count
         // }
         self.searchResult = res.data.content
-        console.log(self.searchResult)
+        // console.log(self.searchResult)
       })
       .catch(err => {
         console.log(err)
       })
 
     },
+    //urlSearch: function (e){
+    //  let self = this
+    //  self.searchItem = e.toLowerCase()
+    //  //console.log(this.searchItem)
+    //  //发往后端，进行查询
+    //  let queryParams = {'keyword':self.searchItem}
+    //  // console.log(queryParams)
+    //  self.axios({
+    //    method: 'get',
+    //    url: self.baseurl + 'Urls/' + self.currentComponent,
+    //    withCredentials: 'true',
+    //    params: queryParams
+    //  })
+    //  .then( res => {
+    //    // console.log(res)
+    //    // if (res.data.count !== ''){
+    //    //   self.projectCount = res.data.count
+    //    // }
+    //    self.searchResult = res.data.content
+    //    console.log(self.searchResult)
+    //  })
+    //  .catch(err => {
+    //    console.log(err)
+    //  })
+    //},
     handleSelected: function (name){
       console.log(name)
     },
