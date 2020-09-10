@@ -63,7 +63,7 @@
 
 <script>
 import {mapState, mapMutations} from 'vuex'
-import createNewproject from '@/components/createNewproject.vue'
+import createNewproject from '@/components/Management/createNewproject.vue'
 export default {
   name: 'projectScope',
   data () {

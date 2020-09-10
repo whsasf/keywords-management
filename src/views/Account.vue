@@ -7,7 +7,7 @@
   </div>
 </template>
 <script>
-import Slogon from '@/components/Slogon.vue'
+import Slogon from '@/components/Account/Slogon.vue'
 export default {
   name: 'Account',
   components: {

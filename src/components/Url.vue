@@ -51,7 +51,7 @@
 
 <script>
 import {mapState,mapMutations} from 'vuex'
-import itemPage from '@/components/urlItemPage.vue'
+import itemPage from '@/components/Urls/urlItemPage.vue'
 export default {
   name: 'Url',
   data (){

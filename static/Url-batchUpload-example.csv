@@ -1,0 +1,4 @@
+Url(必填),运行路径,排除路径,分类
+http://www.hello.word,[{'path':'http://www.hello.word';'type':'regex'};{'path':'http://www.hello.word';'type':'regex'}],[{'path':'http://www.hello.word';'type':'regex'};{'path':'http://www.hello.word';'type':'包含'}],['分类5';'分类1';'分类2']
+http://c,[{'path':'http://c';'type':'regex'};{'path':'http://c';'type':'regex'}],[{'path':'http://c';'type':'regex'};{'path':'http://c';'type':'regex'};{'path':'http://c';'type':'regex'};{'path':'http://c';'type':'regex'}],['分类5';'分类2']
+http://www,[{'path':'http://www/1';'type':'regex'};{'path':'http://www/2';'type':'包含'}],[{'path':'http://www/1';'type':'regex'};{'path':'http://www/2';'type':'包含'}],['分类5';'分类3';'分类1']
