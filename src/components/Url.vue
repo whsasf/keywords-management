@@ -7,6 +7,7 @@
         <i-button class="Url-part112 Url-newItems-button"  type="primary" size="large" @click="exportData(1)"><i-icon type="ios-download"></i-icon> 导出数据</i-button>
         <i-button class="Url-part113 Url-newItem-button" type="primary" icon="md-add-circle"  @click="addItem" >单条添加</i-button>
         <i-itemPage :formCustom="formCustom" :urlItemWindowShow= "urlItemWindowShow" :urlItemPageTitle="urlItemPageTitle" @createUrlNewItem="handleUrlNewItem" @deleteUrlNewItem="handleUrlDeleteItem" ></i-itemPage>
+        <i-seeDetail :website="website" ></i-seeDetail>
         <div class="Url-batchUpload">
         <i-upload class="Url-batchUpload-button" ref="upload" action="" :show-upload-list="true" :before-upload="handleBeforeUpload">
           <i-button class="Url-part114 Url-newItems-button" type="primary" icon="md-cloud-upload"  @click="addItems" >批量添加</i-button>
@@ -39,7 +40,7 @@
       <template slot-scope="{ row }" slot="action">
         <div class="Url-actions">
             <i-button type="primary" size="small" style="margin-right: 5px" @click="Urledit(row)">编辑</i-button>
-            <i-button type="error" size="small" style="margin-right: 5px" @click="UrlDetail(row)">查看详情</i-button>
+            <i-button type="error" size="small" style="margin-right: 5px" @click="seeUrlDetail(row.rootUrl)">查看详情</i-button>
             <i-button type="error" size="small" @click="UrlAction(row)">动作</i-button>
             </div>
       </template>
@@ -52,12 +53,14 @@
 <script>
 import {mapState,mapMutations} from 'vuex'
 import itemPage from '@/components/Urls/urlItemPage.vue'
+import seeDetail from '@/components/Urls/seeDetails.vue'
 export default {
   name: 'Url',
   data (){
     return {
       searchReaultListvisible: true,
       searchItem: '',
+      website: 'https://www.stockhey.com',
       searchResult: [],
       selectedItemList: [],
       loading: false,
@@ -167,16 +170,22 @@ export default {
     }
   },
   computed: {
-    ...mapState(['baseurl','urlItemWindowShow','currentComponent'])
+    ...mapState(['baseurl','urlItemWindowShow','currentComponent','DetailWindowShow'])
   },
   created(){
     this.fetchAllItems() // 获取当前
   },
   components: {
     'i-itemPage':itemPage,
+    'i-seeDetail':seeDetail
   } ,
   methods: {
-    ...mapMutations(['changeUrlItemWindowShow']),
+    ...mapMutations(['changeUrlItemWindowShow','changeDetailWindowShow']),
+    seeUrlDetail: function (url){
+      this.website = url
+      this.changeDetailWindowShow(true)
+      console.log(this.website,this.DetailWindowShow)
+    },
     resetSearch: function (status){
       if (status === false){
         // 隐藏

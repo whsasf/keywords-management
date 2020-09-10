@@ -27,6 +27,7 @@ export default new Vuex.Store({
     collpsed: true,
     currentUserName: '',
     urlItemWindowShow: false,
+    DetailWindowShow: false,
     refreshRouteKey: 0,
     //currentUserDepartment: '',
     currentComponent: '',
@@ -34,6 +35,9 @@ export default new Vuex.Store({
     baseurl: 'http://127.0.0.1:3000/'
   },
   mutations: {
+    changeDetailWindowShow(state,newvalue){
+      state.DetailWindowShow = newvalue
+    },
     changeCollpsed(state,newvalue){
       state.collpsed = newvalue
     },
