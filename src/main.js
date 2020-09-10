@@ -5,8 +5,10 @@ import store from './store'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import 'element-ui/lib/theme-chalk/icon.css';
+import VuePapaParse from 'vue-papa-parse'
+Vue.use(VuePapaParse)
 
-import {Button, Form, FormItem, Input, Icon, Select, Option, Message, Menu, MenuItem, Submenu, Tabs, TabPane, Row, Col, Table, Modal, Card, Page, Layout, Sider, Header, Content,Poptip  } from 'view-design'
+import {Button, Form, FormItem, Input, Icon, Select, Option, Message, Menu, MenuItem, Submenu, Tabs, TabPane, Row, Col, Table, Modal, Card, Page, Layout, Sider, Header, Content,Poptip,Upload,Dropdown,DropdownMenu,DropdownItem  } from 'view-design'
 import 'view-design/dist/styles/iview.css'
 
 Vue.component('i-button', Button)
@@ -32,7 +34,10 @@ Vue.component('i-sider', Sider)
 Vue.component('i-header', Header)
 Vue.component('i-content', Content)
 Vue.component('i-poptip', Poptip)
-
+Vue.component('i-upload', Upload)
+Vue.component('i-dropdown', Dropdown)
+Vue.component('i-dropdownMenu', DropdownMenu)
+Vue.component('i-dropdownItem', DropdownItem)
 
 Vue.prototype.$Message = Message
 Vue.prototype.$Message.config({

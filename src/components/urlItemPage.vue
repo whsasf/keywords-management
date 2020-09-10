@@ -85,7 +85,8 @@
         
         </div>
         <div slot="footer">
-            <i-button type="text" size="large" @click="modalCancel()">取消</i-button>
+            <i-button v-show="formCustom.uid" class="Url-itemPage-delete-button" type="error" size="default" @click="modalDelete()">删除</i-button>
+            <i-button type="default" size="large" @click="modalCancel()">取消</i-button>
             <i-button type="primary" size="large" @click="modalOk('formCustom')">提交</i-button>
         </div>
       </i-modal>
@@ -118,28 +119,9 @@ import {mapState, mapMutations} from 'vuex'
                     'regex',
                     '包含'
                 ],
-                urlIncludeIndex: 1,
-                urlExcludeIndex: 1,
+                // urlIncludeIndex: 1,
+                // urlExcludeIndex: 1,
                 
-                //formCustom: {
-                //    itemName: '',
-                //    categoriesEdit: [],
-                //    statusEdit: '未开始',
-                //    urlIncludeItems: [
-                //        {
-                //            value: {'path':'','type':'regex'},
-                //            index: 1,
-                //            status: 1
-                //        }
-                //    ],
-                //    urlExcludeItems: [
-                //        {
-                //            value: {'path':'','type':'regex'},
-                //            index: 1,
-                //            status: 1
-                //        }
-                //    ]
-                //},
                 ruleCustom: {
                     itemName: [
                         { validator: validateUrl, trigger: 'blur' }
@@ -172,34 +154,28 @@ import {mapState, mapMutations} from 'vuex'
         beforeDestroy (){
         },
         mounted(){
-            console.log('mounted')
-            // console.log(this.formCustom)
-            // 计算 urlIncludeIndex 的值 
-            // console.log(this.formCustom)
-            // this.urlIncludeIndex = this.formCustom.urlIncludeItems.length
-            // this.urlExcludeIndex = this.formCustom.urlExcludeItems.length
         },
         methods: {
             ...mapMutations(['changeUrlItemWindowShow']),
-            handleAdd (type) {
+            handleAdd: function  (type) {
                 if (type === 'include'){
-                    this.urlIncludeIndex++
+                    this.formCustom.urlIncludeIndex++
                     this.formCustom.urlIncludeItems.push({
                         value: {'path':'',type:'regex'},
-                        index: this.urlIncludeIndex,
+                        index: this.formCustom.urlIncludeIndex,
                         status: 1
                     });
                 }else if (type === 'exclude'){
-                    this.urlExcludeIndex++
+                    this.formCustom.urlExcludeIndex++
                     this.formCustom.urlExcludeItems.push({
                         value: {'path':'',type:'regex'},
-                        index: this.urlExcludeIndex,
+                        index: this.formCustom.urlExcludeIndex,
                         status: 1
                     });
                 }
                 
             },
-            handleRemove (urlType,index) {
+            handleRemove: function (urlType,index) {
                 // console.log(index)
                 if (urlType === 'include'){
                     this.shownformCustomUrlIncludeItems[index].status = 0;
@@ -207,18 +183,12 @@ import {mapState, mapMutations} from 'vuex'
                     this.shownformCustomUrlExcludeItems[index].status = 0;
                 }
             },
-            modalOk (name) {
+            modalOk: function (name) {
                 let self = this
                 // check 项目 是否为空
                 self.$refs[name].validate((valid) => {
                     if (valid) {
                         console.log('验证成功')
-
-                        // console.log(self.formCustom.itemName)
-                        // console.log(self.shownformCustomUrlIncludeItems)
-                        // console.log(self.shownformCustomUrlExcludeItems)
-                        // console.log(self.formCustom.categoriesEdit)
-                        // console.log(self.formCustom.statusEdit)
                         // 构造最终结果集
                         let itemInfo = {}
                         itemInfo['rootUrl'] = self.formCustom.itemName
@@ -246,23 +216,9 @@ import {mapState, mapMutations} from 'vuex'
                             self.$emit('createUrlNewItem',{'uid':self.formCustom.uid,'data':itemInfo})
                         }
                          self.$refs[name].resetFields()
-                         self.urlIncludeIndex = 1
-                         self.urlExcludeIndex = 1
+                         // self.urlIncludeIndex = 1
+                         // self.urlExcludeIndex = 1
                          self.changeUrlItemWindowShow(false)
-                        // self.formCustom.urlIncludeItems =[
-                        //        {
-                        //            value: {'path':'','type':'regex'},
-                        //            index: 1,
-                        //            status: 1
-                        //        }
-                        //],
-                        //  self.formCustom.urlExcludeItems = [
-                        //     {
-                        //         value: {'path':'','type':'regex'},
-                        //         index: 1,
-                        //         status: 1
-                        //     }
-                        // ]
                         
                     } else {
                         // console.log('验证失败')
@@ -271,18 +227,25 @@ import {mapState, mapMutations} from 'vuex'
                     }
                 })
             },
-            modalCancel () {
+            modalCancel: function () {
                 let self = this
-                self.urlIncludeIndex = 1
-                self.urlExcludeIndex = 1
+                // self.urlIncludeIndex = 1
+                // self.urlExcludeIndex = 1
                 self.changeUrlItemWindowShow(false) 
                 
+            },
+            modalDelete: function(){
+                // 触发删除事件 到 父组件
+                this.$emit('deleteUrlNewItem',{'uid':this.formCustom.uid})
+                this.changeUrlItemWindowShow(false)
             }
         }
     }
 </script>
 <style scoped>
 
+.Url-itemPage{
+}
 .Url-itemPage-form-urlIncludePath ,.Url-itemPage-form-urlExcludePath {
     border: 1px dashed #81b165;
     border-radius: 5px;
@@ -334,5 +297,9 @@ import {mapState, mapMutations} from 'vuex'
 
 .ivu-form-item{
     margin-bottom: 5px
+}
+
+.Url-itemPage-delete-button{
+    margin-right: 80px
 }
 </style>
