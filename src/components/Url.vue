@@ -12,7 +12,7 @@
           <i-button class="Url-part114 Url-newItems-button" type="primary" icon="md-cloud-upload"  @click="addItems" >批量添加</i-button>
         </i-upload>
           <div class="Url-batchUpload-template">
-            <a :href=" baseurl + 'static/Url-batchUpload-example.csv'" title="下载上传模板">下载上传模板</a>
+            <a :href=" baseurl + 'static/Url-batchUpload-example.csv'" title="下载上传模板">下载添加模板</a>
           </div>
         </div>
         
