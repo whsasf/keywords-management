@@ -21,7 +21,7 @@
          <i-select v-model="select3" slot="prepend" style="width: 60px" >
                <i-option value="Url">Url</i-option>
            </i-select>
-        <i-select filterable  remote class="Url-part121"  v-model="searchItem"  :remote-method="urlSearch" placeholder="请输入url进行模糊查询">
+        <i-select filterable  remote class="Url-part121"  clearable v-model="searchItem"  :remote-method="urlSearch" placeholder="请输入url进行模糊查询" @on-open-change="resetSearch">
            <i-option v-for="(item,index) in searchResult" :value="item.rootUrl" :key="index">{{item.rootUrl}}</i-option>
         </i-select>
          <i-button slot="append" icon="ios-search"></i-button>
@@ -58,7 +58,7 @@ export default {
     return {
       searchReaultListvisible: true,
       searchItem: '',
-      searchResult: [{'rootUrl':'q'},{'rootUrl':'w'}],
+      searchResult: [],
       selectedItemList: [],
       loading: false,
       itemCount: 0,
@@ -177,16 +177,24 @@ export default {
   } ,
   methods: {
     ...mapMutations(['changeUrlItemWindowShow']),
+    resetSearch: function (status){
+      if (status === false){
+        // 隐藏
+        // console.log('true')
+        this.searchResult =[]
+      }
+    },
     handleClickOutside: function (){
       console.log('1')
     },
     urlSearch: function (query){
+      // 还未完成，选择特定条目时的动作: 获取该 项目的所有信息 从数据库
       let self = this
       // console.log(query)
-      self.searchItem = query.toLowerCase()
+      // self.searchItem = query.toLowerCase()
       //console.log(this.searchItem)
       //发往后端，进行查询
-      let queryParams = {'keyword':self.searchItem}
+      let queryParams = {'keyword':query.toLowerCase()}
       // console.log(queryParams)
       self.axios({
         method: 'get',
